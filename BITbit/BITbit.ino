@@ -19,7 +19,7 @@ int light=0;
 // Parameter 2 = pin number connected to RainbowBit's input (most are valid)
 // Parameter 3 = pixel type flags, add together as needed:
 
-#define color 30
+#define color 200
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(BitNumber, PIN, NEO_GRB + NEO_KHZ800);
 
 //preset the color value
@@ -44,62 +44,51 @@ void setup() {
   digitalWrite(LED,HIGH);  
 }
 
-void loop() {   
-   
+void loop() 
+{     
   while(1)
   {
-//    ADCacc = 0;  //clearing the previous data
-//    for(int i = 0; i < 33; i ++)
-//    {
-//      ADCacc = ADCacc + analogRead(ADC); //accumulate 50 samples
-//    }
-//    ADCacc = ADCacc / 33; //get the average
-    //float infraredVoltage = ADCacc * 0.0048828;  //convert to voltage
-    
-    ADCacc = analogRead(ADC);
-    /*linearation for GP2Y0A21*/    
+    ADCacc = analogRead(ADC);              //linearation for GP2Y0A21    
     ADCacc = constrain (ADCacc, 82, 573);  //make the voltage valid for linearization
-    distance = (6787/(ADCacc -3)) - 4 ;  //obtain the distance in cm detected by infrared sensor 
-    //distance = map (distance, 8 , 82, 32, 3);
-    
-     //Serial.println(distance);     
-    
+    distance = (6787/(ADCacc -3)) - 4 ;    //obtain the distance in cm detected by infrared sensor 
 
-        if(distance<=80 && distance>20){
+        if(distance<=80 && distance>20)
+        {
           light=map(distance,20,80,77,0);
-          for(uint16_t i=0; i<strip.numPixels(); i++) {
-            if( i < light){
-            strip.setBrightness(200); //set the brightness 
-            strip.setPixelColor(i, rainbowBit_color[current_color]);
-            strip.show();
-           
-            
+          for(uint16_t i=0; i<strip.numPixels(); i++)
+          {
+            if( i < light)
+            {
+              strip.setPixelColor(i, rainbowBit_color[current_color]);
+              strip.show();
             }
             
-            else {strip.setPixelColor(i, blank);
-              
-            }strip.show();
-          }
-          
+            else 
+            {
+              strip.setPixelColor(i, blank);  
+            }
+            strip.show();
+          } 
         }
-        else if(distance <=20){
+        else if(distance <=20)
+        {
             uint16_t i, j;
 
-            for(j=0; j<256*5; j++) {               // 5 cycles of all colors on wheel
-            for(i=0; i< strip.numPixels(); i++){
-            strip.setBrightness(20);               //set the brightness
-            strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
-            }
-            strip.show();
-            
+            for(j=0; j<256*5; j++) // 5 cycles of all colors on wheel
+            {               
+              for(i=0; i< strip.numPixels(); i++)
+              {
+                strip.setBrightness(20);               //set the brightness
+                strip.setPixelColor(i, Wheel(((i * 256 / strip.numPixels()) + j) & 255));
+              }
+              strip.show();
             }
                current_color ++;  //change color   
-      if(current_color >= 6) current_color = 0;
-            } 
+               if(current_color >= 6) current_color = 0;
+        } 
         else for(uint16_t i=0; i<strip.numPixels(); i++)strip.setPixelColor(i, blank);
-        strip.show();
-    
-}
+        strip.show();  
+  }
 }
 uint32_t Wheel(byte WheelPos) {
   if(WheelPos < 85) {
